@@ -3,7 +3,11 @@ import 'dotenv/config';
 import { IndexRoute } from './modules/index';
 import {App, listen} from './app'
 
-const routes = [IndexRoute()];
+let prefix = '/api'
+
+const routes = [
+    IndexRoute(`${prefix}/`),
+];
 
 App(routes);
 listen();

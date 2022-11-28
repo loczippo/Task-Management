@@ -4,11 +4,13 @@
   "description": "Task management software should provide an overview of work in progress that enables tracking from conception to completion. Let's get organized together!",
   "main": "src/app.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon",
     "tsc": "tsc",
     "start": "node dist/server.js",
     "docs": "typedoc",
-    "build": "webpack"
+    "build": "webpack",
+    "lint": "eslint . --ext .ts",
+    "lint-and-fix": "eslint . --ext .ts --fix"
   },
   "author": "Loc-Zippo",
   "license": "ISC",
@@ -35,7 +37,6 @@
     "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.3",
     "@types/node": "^18.11.9",
-    "@typescript-eslint/eslint-plugin": "^5.44.0",
     "@typescript-eslint/parser": "^5.44.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.28.0",

@@ -2,7 +2,7 @@ import IndexController from "./index.controler";
 import { Router } from "express";
 import { Route } from "../../core/interfaces";
 
-const IndexRoute = () : Route => {
+const IndexRoute = (): Route => {
 
     let path = '/';
     let router = Router();

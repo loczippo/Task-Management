@@ -1,6 +1,0 @@
-{"level":"error","message":"Connection string is invalid"}
-{
-  message: 'Connection string is invalid',
-  level: 'error',
-  timestamp: '23:11:51 28/11/2022'
-}

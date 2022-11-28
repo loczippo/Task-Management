@@ -10,12 +10,19 @@ const Logger: winston.Logger = winston.createLogger({
       filename: 'logs/error.log',
       level: 'error',
     }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
+    new winston.transports.File({ filename: 'logs/combined.log',
+     maxsize: 5242880,
+     format: winston.format.combine(
+        winston.format.timestamp({
+          format: 'HH:MM:SS DD/MM/YYYY'
+        }),
+        winston.format.prettyPrint(),
+      )}),
   ],
-  format: winston.format.combine(
-    winston.format.colorize({ all: true }),
-    winston.format.simple()
-  ),
+  // format: winston.format.combine(
+  //   winston.format.colorize({ all: true }),
+  //   winston.format.simple()
+  // ),
 });
 
 //
@@ -25,7 +32,10 @@ const Logger: winston.Logger = winston.createLogger({
 if (process.env.NODE_ENV === 'development') {
   Logger.add(
     new winston.transports.Console({
-      format: winston.format.simple(),
+      format: winston.format.combine(
+        winston.format.colorize({ all: true }),
+        winston.format.simple()
+      )
     })
   );
 }

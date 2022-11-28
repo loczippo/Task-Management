@@ -9,7 +9,13 @@ const Logger: winston.Logger = winston.createLogger({
     new winston.transports.File({
       filename: 'logs/error.log',
       level: 'error',
-    }),
+      maxsize: 5242880,
+      format: winston.format.combine(
+        winston.format.timestamp({
+          format: 'HH:MM:SS DD/MM/YYYY'
+        }),
+        winston.format.prettyPrint(),
+      )}),
     new winston.transports.File({ filename: 'logs/combined.log',
      maxsize: 5242880,
      format: winston.format.combine(

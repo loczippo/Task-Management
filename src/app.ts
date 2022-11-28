@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import mongoose from 'mongoose';
+import { Logger } from '../src/core/utils';
 
 const app: express.Application = express();
 const port: string | number = process.env.PORT || 3000;
@@ -13,9 +15,26 @@ const production:boolean = process.env.NODE_ENV == 'production' ? true : false;
 const feURL:string = process.env.FE_URL || '';
 
 const App = (routes: Route[]): void => {
+    connectToDatabase();
+    initializeRateLimit();
     initializeMiddleware();
     initializeRoutes(routes);
     initializeErrorMiddleware();
+}
+
+const connectToDatabase = (): void => {
+    const connectString = process.env.MONGODB_URI;
+    if (!connectString) {
+      Logger.error('Connection string is invalid');
+      return;
+    }
+    mongoose
+      .connect(connectString)
+      .catch((reason) => {
+        Logger.error(reason);
+        process.exit();
+      });
+    Logger.info('Database connected...');
 }
 
 const initializeRoutes = (routes: Route[]): void => {
@@ -35,19 +54,20 @@ const initializeMiddleware = (): void => {
         app.use(morgan('dev'));
         app.use(cors({ origin: true, credentials: true }));
     }
+    app.use(express.json({ limit: '300kb' }));
+    app.use(express.urlencoded({ extended: true }));
+}
 
-    let TOO_MANY_REQUEST: number = 429;
-    let BLOCK_SECOND = 1 * 60 * 1000; //1 minute
-    let MAX_REQUEST = 5;
+const initializeRateLimit = (): void => {
+    let status: number = 429;
+    let BLOCK_SECOND: number = 1 * 60 * 1000; //1 minute
+    let MAX_REQUEST: number = 15;
     app.use(rateLimit({
         windowMs: BLOCK_SECOND,
         max: MAX_REQUEST,
-        statusCode: TOO_MANY_REQUEST,
-        message: {code: TOO_MANY_REQUEST, message: "TOO MANY REQUESTS"},
+        statusCode: status,
+        message: {error: {message: "(#1) Page request limit reached", type: 'OauthException', code: status}},
     }));
-
-    app.use(express.json({ limit: '300kb' }));
-    app.use(express.urlencoded({ extended: true }));
 }
 
 const initializeErrorMiddleware = (): void => {

@@ -16,10 +16,6 @@ const feURL: string = process.env.FE_URL || '';
 
 const App = (routes: Route[]): void => {
   connectToDatabase();
-<<<<<<< HEAD
-=======
-  initializeRateLimit();
->>>>>>> d02f48cb9967a0e130abf314858ca88e90add3e0
   initializeMiddleware();
   initializeRoutes(routes);
   initializeErrorMiddleware();
@@ -42,10 +38,7 @@ const initializeRoutes = (routes: Route[]): void => {
   routes.forEach((route) => {
     app.use('/', route.router);
   });
-<<<<<<< HEAD
   // app.use('*', (req, res, next) => res.redirect('/'));
-=======
->>>>>>> d02f48cb9967a0e130abf314858ca88e90add3e0
 };
 
 const initializeMiddleware = (): void => {
@@ -62,19 +55,11 @@ const initializeMiddleware = (): void => {
   app.use(express.urlencoded({ extended: true }));
 };
 
-<<<<<<< HEAD
 const RateLimit = (path: string): void => {
   const status = 429;
   const BLOCK_SECOND: number = 1 * 60 * 1000; //1 minute
   const MAX_REQUEST = 5;
   app.use(path,
-=======
-const initializeRateLimit = (): void => {
-  const status = 429;
-  const BLOCK_SECOND: number = 1 * 60 * 1000; //1 minute
-  const MAX_REQUEST = 15;
-  app.use(
->>>>>>> d02f48cb9967a0e130abf314858ca88e90add3e0
     rateLimit({
       windowMs: BLOCK_SECOND,
       max: MAX_REQUEST,
@@ -94,8 +79,4 @@ const listen = (): void => {
   });
 };
 
-<<<<<<< HEAD
 export { App, listen, RateLimit };
-=======
-export { App, listen };
->>>>>>> d02f48cb9967a0e130abf314858ca88e90add3e0

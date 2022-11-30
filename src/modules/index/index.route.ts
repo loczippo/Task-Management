@@ -1,12 +1,12 @@
-import IndexController from "./index.controler";
-import { Router } from "express";
-import { Route } from "@core/interfaces";
+import IndexController from './index.controler';
+import { Router } from 'express';
+import { Route } from '@core/interfaces';
 
-const IndexRoute = (path: string): Route => {
+const indexRoute = (): Route => {
+  const path = process.env.PREFIX_API + '/';
+  const router = Router();
+  router.get(path, IndexController.index);
+  return { path, router };
+};
 
-    let router = Router();
-    router.get(path, IndexController)
-    return {path, router}
-}
-
-export default IndexRoute;
+export default indexRoute;

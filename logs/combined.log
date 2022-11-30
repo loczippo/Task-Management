@@ -1,0 +1,35 @@
+{
+  message: 'Database connected...',
+  level: 'info',
+  timestamp: '23:11:33 28/11/2022'
+}
+{
+  message: 'Database connected...',
+  level: 'info',
+  timestamp: '23:11:22 28/11/2022'
+}
+{
+  message: 'Database connected...',
+  level: 'info',
+  timestamp: '23:11:10 28/11/2022'
+}
+{
+  message: 'Connection string is invalid',
+  level: 'error',
+  timestamp: '23:11:90 28/11/2022'
+}
+{
+  message: 'Database connected...',
+  level: 'info',
+  timestamp: '23:11:92 28/11/2022'
+}
+{
+  message: 'Database connected...',
+  level: 'info',
+  timestamp: '23:11:96 28/11/2022'
+}
+{
+  message: 'Connection string is invalid',
+  level: 'error',
+  timestamp: '23:11:52 28/11/2022'
+}

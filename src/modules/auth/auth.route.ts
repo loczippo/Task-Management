@@ -4,7 +4,7 @@ import authController from './auth.controller';
 const AuthRoute = (): Route => {
     let path = process.env.PREFIX_API + '/auth';
     let router = Router();
-    router.post(path, authController.login)
+    router.post(path, authController.login) //login
     return {path, router}
 }
 export default AuthRoute

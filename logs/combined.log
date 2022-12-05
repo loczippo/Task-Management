@@ -293,3 +293,8 @@
   level: 'info',
   timestamp: '18:11:29 30/11/2022'
 }
+{
+  message: 'Database connected...',
+  level: 'info',
+  timestamp: '07:12:77 05/12/2022'
+}

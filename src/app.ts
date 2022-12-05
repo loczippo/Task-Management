@@ -53,6 +53,7 @@ const initializeMiddleware = (): void => {
   }
   app.use(express.json({ limit: '300kb' }));
   app.use(express.urlencoded({ extended: true }));
+  app.use(errorMiddleware);
 };
 
 const RateLimit = (path: string): void => {

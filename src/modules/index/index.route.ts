@@ -2,6 +2,10 @@ import IndexController from './index.controler';
 import { Router } from 'express';
 import { Route } from '@core/interfaces';
 
+/**
+ * @category General Use
+ */
+
 const indexRoute = (): Route => {
   const path = process.env.PREFIX_API + '/';
   const router = Router();

@@ -6,6 +6,8 @@ import { UserRoute } from './modules/users'
 import { AuthRoute } from './modules/auth';
 import { App, listen } from './app';
 
+//defined all routes in application
+
 const routes = [
     IndexRoute(),
     UserRoute(),

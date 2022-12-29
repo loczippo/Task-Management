@@ -8,6 +8,8 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
 import { Logger } from '../src/core/utils';
+import IMessage from '@core/interfaces/message.interface';
+import IRateLimit from '@core/interfaces/rate_limit.interface';
 
 const app: express.Application = express();
 const port: string | number = process.env.PORT || 3000;
@@ -56,16 +58,16 @@ const initializeMiddleware = (): void => {
   app.use(errorMiddleware);
 };
 
-const RateLimit = (path: string): void => {
-  const status = 429;
-  const BLOCK_SECOND: number = 1 * 60 * 1000; //1 minute
-  const MAX_REQUEST = 5;
-  app.use(path,
+const RateLimit = (props: IRateLimit): void => {
+  const error: IMessage = { message: 'Application request limit reached', type: 'RequestException', code: 4 };
+
+  app.use(props.path,
     rateLimit({
-      windowMs: BLOCK_SECOND,
-      max: MAX_REQUEST,
-      statusCode: status,
-      message: { error: { message: '(#1) Page request limit reached', type: 'OauthException', code: status } }
+      windowMs: props.minutes * 60 * 1000,
+      max: props.maxRequest,
+      message: {
+        error
+      }
     })
   );
 };
@@ -80,4 +82,4 @@ const listen = (): void => {
   });
 };
 
-export { App, listen, RateLimit };
+export { App, RateLimit, listen };

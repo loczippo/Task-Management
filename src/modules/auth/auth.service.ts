@@ -2,10 +2,12 @@ import LoginDto from './dtos/auth.dto';
 import { TokenData } from '../../core/interfaces/auth.interface';
 import { isEmptyObject, randomTokenString } from './../../core/utils/helper';
 import { HttpException } from '../../core/exceptions';
-import { IUser, UserSchema } from '../../modules/users';
+import { UserSchema } from '../../modules/users';
 import { generateJwtToken } from './../../core/utils/helper';
 import { RefreshTokenSchema } from '../../modules/refresh_token';
+import IPublicUserInfo from '@core/interfaces/public_user_info.interface';
 import bcryptjs from 'bcryptjs';
+import RoleEnum from './../../core/enums/role.enum';
 
 const userSchema = UserSchema;
 
@@ -30,12 +32,25 @@ class AuthService {
     return jwtToken;
   };
 
-  public async getCurrentLoginUser(userId: string): Promise<IUser> {
+  public async getCurrentLoginUser(userId: string): Promise<IPublicUserInfo> {
     const user = await userSchema.findById(userId).exec();
     if (!user) {
       throw new HttpException(404, `User is not exists`);
     }
-    return user;
+
+    const userRole = RoleEnum.ADMIN;
+
+    let user_info = {
+      _id: user._id,
+      last_name: user.last_name,
+      first_name: user.first_name,
+      email: user.email,
+      avatar: user.avatar,
+      createdAt: user.createdAt,
+      role: userRole
+    } as IPublicUserInfo;
+
+    return user_info;
   }
 
   public async refreshToken(token: string): Promise<TokenData> {

@@ -15,7 +15,7 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
       req.user.id = user.id;
       next();
     } catch (error) {
-      Logger.error(`[ERROR] Msg: ${error}`);
+      Logger.error(`[ERROR][${req.socket.remoteAddress}] - Message: ${error}`);
       res.status(401).json({ message: 'Token is not valid' });
     }
   };

@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
 import { Logger } from '../src/core/utils';
 import IMessage from '@core/interfaces/message.interface';
 import IRateLimit from '@core/interfaces/rate_limit.interface';
+import timeout from 'connect-timeout';
 
 const app: express.Application = express();
 const port: string | number = process.env.PORT || 3000;
@@ -44,6 +45,7 @@ const initializeRoutes = (routes: Route[]): void => {
 };
 
 const initializeMiddleware = (): void => {
+  app.use(timeout('180s'));
   if (production) {
     app.use(hpp());
     app.use(helmet());
@@ -59,15 +61,13 @@ const initializeMiddleware = (): void => {
 };
 
 const RateLimit = (props: IRateLimit): void => {
-  const error: IMessage = { message: 'Application request limit reached', type: 'RequestException', code: 4 };
+  const message: IMessage = { message: 'Application request limit reached', code: 4 };
 
   app.use(props.path,
     rateLimit({
       windowMs: props.minutes * 60 * 1000,
       max: props.maxRequest,
-      message: {
-        error
-      }
+      message
     })
   );
 };

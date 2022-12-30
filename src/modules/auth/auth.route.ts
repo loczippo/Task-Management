@@ -7,6 +7,8 @@ const AuthRoute = (): Route => {
   let router = Router();
 
   router.post(path, authController.login); //login
+  router.post(path + '/refresh-token', authController.refreshToken); //refresh token
+  router.post(path + '/revoke-token', authMiddleware, authController.revokeToken);
   router.get(path, authMiddleware, authController.getCurrentLoginUser);
   return { path, router };
 };

@@ -8,6 +8,9 @@ import { RefreshTokenSchema } from '../../modules/refresh_token';
 import IPublicUserInfo from '@core/interfaces/public_user_info.interface';
 import bcryptjs from 'bcryptjs';
 import RoleEnum from './../../core/enums/role.enum';
+import Logger from './../../core/utils/logger';
+import IMessage from './../../core/interfaces/message.interface';
+import { IRefreshToken } from './../../core/interfaces/refresh_token.interface';
 
 const userSchema = UserSchema;
 
@@ -57,28 +60,31 @@ class AuthService {
     const refreshToken = await this.getRefreshTokenFromDb(token);
     const { user } = refreshToken;
 
+    const userId = user.valueOf();
+
     // replace old refresh token with a new one and save
-    const newRefreshToken = await this.generateRefreshToken(user);
+    const newRefreshToken = await this.generateRefreshToken(userId);
     refreshToken.revoked = new Date(Date.now());
     refreshToken.replacedByToken = newRefreshToken.token;
     await refreshToken.save();
     await newRefreshToken.save();
 
-    // return basic details and tokens
-    return generateJwtToken(user, newRefreshToken.token);
+    return generateJwtToken(userId, newRefreshToken.token);
   }
 
-  public async revokeToken(token: string): Promise<void> {
+  public async revokeToken(token: string): Promise<IMessage> {
     const refreshToken = await this.getRefreshTokenFromDb(token);
 
     // revoke token and save
     refreshToken.revoked = new Date(Date.now());
     await refreshToken.save();
+    return { message: 'Success revoke token'};;
   }
 
   private async getRefreshTokenFromDb(refreshToken: string) {
-    const token = await RefreshTokenSchema.findOne({ refreshToken }).populate('user').exec();
-    if (!token || !token.isActive) throw new HttpException(404, `Invalid token`);
+    const token = await RefreshTokenSchema.findOne({ token: refreshToken }).exec();
+    Logger.info(token);
+    if (!token || !token.isActive) throw new HttpException(400, `Invalid refresh token`);
     return token;
   }
 

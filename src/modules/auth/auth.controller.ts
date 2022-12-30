@@ -27,8 +27,8 @@ class AuthController {
   public revokeToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.body.token;
-      await authService.revokeToken(token);
-      res.status(200);
+      const revokeData = await authService.revokeToken(token);
+      res.status(200).json(revokeData);
     } catch (error) {
       next(error);
     }

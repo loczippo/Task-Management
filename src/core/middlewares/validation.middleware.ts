@@ -17,6 +17,8 @@ const validationMiddleware = (
                 return Object.values(error.constraints!)
             }).join(",").replaceAll(",", ", ");
             next(new HttpException(400, messages));
+        } else {
+          next();
         }
       }
     );

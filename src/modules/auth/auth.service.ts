@@ -11,8 +11,8 @@ import RoleEnum from './../../core/enums/role.enum';
 import Logger from './../../core/utils/logger';
 import IMessage from './../../core/interfaces/message.interface';
 import { IRefreshToken } from './../../core/interfaces/refresh_token.interface';
-
-import geoip from 'geoip-lite';
+import ILocationIpAddress from './../../core/interfaces/location.interface';
+import p from 'phin';
 
 const userSchema = UserSchema;
 
@@ -83,12 +83,23 @@ class AuthService {
   }
 
   private async getRefreshTokenFromDb(refreshToken: string, ip?: string) {
-    const token = await RefreshTokenSchema.findOne({ token: refreshToken }).exec();
-    // Logger.info(token);
+    const token = await RefreshTokenSchema.findOne({ token: refreshToken }).populate('user').exec();
+    
     if (!token) throw new HttpException(400, `Invalid refresh token`);
     if(!token.revoked && ip != null && token.createdByIp != ip) {
-      var geo = geoip.lookup(ip);
-      console.log(geo);
+
+      const url = `http://api.ipstack.com/${ip}?access_key=b15d53eb0f63b5a549a7b1833c2e0841`;
+      const res = await p({
+        url: url,
+        method: 'GET',
+        parse: 'json'
+      });
+
+      const body: ILocationIpAddress = res.body as ILocationIpAddress;
+
+      var userEmail = token.user.toString().split('\n')[4].split('\'')[1];
+      console.log(`Tài khoản của bạn: ${userEmail} vừa đăng nhập trên một thiết bị mới: ${body.ip} tại ${body.city}, ${body.region_name}, ${body.country_name}. Nếu không phải bạn, hãy thay đổi mật khẩu ngay lập tức`);
+
     }
     if(!token.isActive) { //RFR detect hacker attacking the session
       //dispute refresh token session in hacker-user 
@@ -106,7 +117,7 @@ class AuthService {
       user: userId,
       token: randomTokenString(),
       createdByIp: ip,
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // in 7 days
+      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000) // in 7 days
     });
   };
 }

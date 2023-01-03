@@ -9,14 +9,15 @@ import IRateLimit from '@core/interfaces/rate_limit.interface';
  */
 
 const indexRoute = (): Route => {
-  const path = process.env.PREFIX_API + '/';
+  const u = (path: string): string => process.env.PREFIX_API + path;
   
   // const props: IRateLimit = {path: path, maxRequest: 2, minutes: 1};
   // RateLimit(props);
 
   const router = Router();
-  router.get(path, IndexController.index);
-  return { path, router };
+  router.get(u(`/`), IndexController.index);
+  
+  return { router };
 };
 
 export default indexRoute;

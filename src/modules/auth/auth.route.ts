@@ -3,13 +3,13 @@ import { Route } from '@core/interfaces';
 import authController from './auth.controller';
 import authMiddleware from './../../core/middlewares/auth.middleware';
 const AuthRoute = (): Route => {
-  let path = process.env.PREFIX_API + '/auth';
+  const u = (path: string): string => process.env.PREFIX_API + '/auth' + path;
   let router = Router();
 
-  router.post(path, authController.login); //login
-  router.post(path + '/refresh-token', authController.refreshToken); //refresh token
-  router.post(path + '/revoke-token', authMiddleware, authController.revokeToken);
-  router.get(path, authMiddleware, authController.getCurrentLoginUser);
-  return { path, router };
+  router.post(u(``), authController.login); //login
+  router.post(u(`/refresh-token`), authController.refreshToken); //refresh token
+  router.post(u(`/revoke-token`), authMiddleware, authController.revokeToken);
+  router.get(u(``), authMiddleware, authController.getCurrentLoginUser);
+  return { router };
 };
 export default AuthRoute;

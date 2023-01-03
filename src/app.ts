@@ -45,7 +45,8 @@ const initializeRoutes = (routes: Route[]): void => {
 };
 
 const initializeMiddleware = (): void => {
-  app.use(timeout('180s'));
+  app.use(timeout('20s'));
+  app.set('trust proxy', true)
   if (production) {
     app.use(hpp());
     app.use(helmet());

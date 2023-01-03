@@ -12,10 +12,12 @@ import Logger from './../../core/utils/logger';
 import IMessage from './../../core/interfaces/message.interface';
 import { IRefreshToken } from './../../core/interfaces/refresh_token.interface';
 
+import geoip from 'geoip-lite';
+
 const userSchema = UserSchema;
 
 class AuthService {
-  public login = async (model: LoginDto): Promise<TokenData> => {
+  public login = async (model: LoginDto, ip: string): Promise<TokenData> => {
     if (isEmptyObject(model)) {
       throw new HttpException(400, 'Model is empty');
     }
@@ -26,7 +28,7 @@ class AuthService {
     const isMatchPassword = await bcryptjs.compare(model.password, user.password);
     if (!isMatchPassword) throw new HttpException(400, 'Credential is not valid');
 
-    const refreshToken = await this.generateRefreshToken(user._id);
+    const refreshToken = await this.generateRefreshToken(user._id, ip);
     const jwtToken = generateJwtToken(user._id, refreshToken.token);
 
     // save refresh token
@@ -56,14 +58,14 @@ class AuthService {
     return user_info;
   }
 
-  public async refreshToken(token: string): Promise<TokenData> {
-    const refreshToken = await this.getRefreshTokenFromDb(token);
+  public async refreshToken(token: string, ip: string): Promise<TokenData> {
+    const refreshToken = await this.getRefreshTokenFromDb(token, ip);
     const { user } = refreshToken;
 
     const userId = user.valueOf();
 
     // replace old refresh token with a new one and save
-    const newRefreshToken = await this.generateRefreshToken(userId);
+    const newRefreshToken = await this.generateRefreshToken(userId, ip);
     refreshToken.revoked = new Date(Date.now());
     refreshToken.replacedByToken = newRefreshToken.token;
     await refreshToken.save();
@@ -74,28 +76,39 @@ class AuthService {
 
   public async revokeToken(token: string): Promise<IMessage> {
     const refreshToken = await this.getRefreshTokenFromDb(token);
-
     // revoke token and save
     refreshToken.revoked = new Date(Date.now());
     await refreshToken.save();
-    return { message: 'Success revoke token'};;
+    return { message: 'Success revoke token'};
   }
 
-  private async getRefreshTokenFromDb(refreshToken: string) {
+  private async getRefreshTokenFromDb(refreshToken: string, ip?: string) {
     const token = await RefreshTokenSchema.findOne({ token: refreshToken }).exec();
-    Logger.info(token);
-    if (!token || !token.isActive) throw new HttpException(400, `Invalid refresh token`);
+    // Logger.info(token);
+    if (!token) throw new HttpException(400, `Invalid refresh token`);
+    if(!token.revoked && ip != null && token.createdByIp != ip) {
+      var geo = geoip.lookup(ip);
+      console.log(geo);
+    }
+    if(!token.isActive) { //RFR detect hacker attacking the session
+      //dispute refresh token session in hacker-user 
+      if(token.revoked) {
+        await this.revokeToken(token.replacedByToken);
+      }
+      throw new HttpException(401, `Session invalid`); 
+    }
     return token;
   }
 
-  private generateRefreshToken = async (userId: string): Promise<any> => {
+  private generateRefreshToken = async (userId: string, ip: string): Promise<any> => {
     // create a refresh token that expires in 7 days
     return new RefreshTokenSchema({
       user: userId,
       token: randomTokenString(),
+      createdByIp: ip,
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // in 7 days
     });
   };
 }
 
-export = new AuthService();
+export default new AuthService();

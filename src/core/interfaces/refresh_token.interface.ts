@@ -4,6 +4,7 @@ export interface IRefreshToken {
   expires: Date;
   created: Date;
   revoked: Date;
+  createdByIp: string;
   replacedByToken: string;
   isActive: boolean;
   isExpired: boolean;

@@ -6,7 +6,10 @@ class AuthController {
   public login = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const model: LoginDto = req.body;
-      const tokenData: TokenData = await authService.login(model);
+
+      const ip: string = req.ip || '';
+
+      const tokenData: TokenData = await authService.login(model, ip);
       res.status(200).json(tokenData);
     } catch (error) {
       next(error);
@@ -17,7 +20,10 @@ class AuthController {
   public refreshToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const refreshToken = req.body.refreshToken;
-      const tokenData: TokenData = await authService.refreshToken(refreshToken);
+
+      const ip: string = req.ip || '';
+
+      const tokenData: TokenData = await authService.refreshToken(refreshToken, ip);
       res.status(200).json(tokenData);
     } catch (error) {
       next(error);

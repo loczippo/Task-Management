@@ -85,7 +85,7 @@ class AuthService {
   private async getRefreshTokenFromDb(refreshToken: string, ip?: string) {
     const token = await RefreshTokenSchema.findOne({ token: refreshToken }).populate('user').exec();
     
-    if (!token) throw new HttpException(400, `Invalid refresh token`);
+    if (!token || token.isExpired) throw new HttpException(400, `Invalid refresh token`);
     if(!token.revoked && ip != null && token.createdByIp != ip) {
 
       const url = `http://api.ipstack.com/${ip}?access_key=b15d53eb0f63b5a549a7b1833c2e0841`;

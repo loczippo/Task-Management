@@ -14,7 +14,8 @@ const RefreshTokenSchema = new mongoose.Schema({
   revokedByIp: String,
   replacedByToken: String,
 }, {
-  timestamps: true
+  timestamps: true,
+  versionKey: false,
 });
 
 RefreshTokenSchema.virtual('isExpired').get(function (this: { expires: Date }) {

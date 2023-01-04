@@ -60,18 +60,16 @@ class AuthService {
 
   public async refreshToken(token: string, ip: string): Promise<TokenData> {
     const refreshToken = await this.getRefreshTokenFromDb(token, ip);
-    const { user } = refreshToken;
-
-    const userId = user.valueOf();
+    const user: IPublicUserInfo = refreshToken;
 
     // replace old refresh token with a new one and save
-    const newRefreshToken = await this.generateRefreshToken(userId, ip);
+    const newRefreshToken = await this.generateRefreshToken(user._id, ip);
     refreshToken.revoked = new Date(Date.now());
     refreshToken.replacedByToken = newRefreshToken.token;
     await refreshToken.save();
     await newRefreshToken.save();
 
-    return generateJwtToken(userId, newRefreshToken.token);
+    return generateJwtToken(user._id, newRefreshToken.token);
   }
 
   public async revokeToken(token: string): Promise<IMessage> {
@@ -111,7 +109,7 @@ class AuthService {
     return token;
   }
 
-  private generateRefreshToken = async (userId: string, ip: string): Promise<any> => {
+  private generateRefreshToken = async (userId: string = '', ip: string): Promise<any> => {
     // create a refresh token that expires in 7 days
     return new RefreshTokenSchema({
       user: userId,

@@ -60,7 +60,8 @@ class AuthService {
 
   public async refreshToken(token: string, ip: string): Promise<TokenData> {
     const refreshToken = await this.getRefreshTokenFromDb(token, ip);
-    const user: IPublicUserInfo = refreshToken;
+    const user: IPublicUserInfo = refreshToken.user as IPublicUserInfo;
+
 
     // replace old refresh token with a new one and save
     const newRefreshToken = await this.generateRefreshToken(user._id, ip);

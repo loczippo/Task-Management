@@ -7,7 +7,7 @@ class AuthController {
     try {
       const model: LoginDto = req.body;
 
-      const ip: string = req.ip || '';
+      const ip: string = req.ip;
 
       const tokenData: TokenData = await authService.login(model, ip);
       res.status(200).json(tokenData);
@@ -21,7 +21,7 @@ class AuthController {
     try {
       const refreshToken = req.body.refreshToken;
 
-      const ip: string = req.ip || '';
+      const ip: string = req.ip;
 
       const tokenData: TokenData = await authService.refreshToken(refreshToken, ip);
       res.status(200).json(tokenData);

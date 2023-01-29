@@ -20,6 +20,6 @@ export default class RegisterDto {
     @IsEmail()
     public email: string;
     @IsNotEmpty()
-    @MinLength(6)
+    @MinLength(8)
     public password: string;
   }

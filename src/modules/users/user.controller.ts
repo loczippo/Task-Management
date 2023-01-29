@@ -11,8 +11,8 @@ class UserController {
     register = async(req: Request, res: Response, next: NextFunction) => {
         try {
             const model: RegisterDto = req.body;
-            const TokenData: TokenData = await UserService.createUser(model);
-            res.status(201).json(TokenData);
+            await UserService.createUser(model);
+            res.status(201).json(model);
         } catch(error) {
             next(error);
         } finally {

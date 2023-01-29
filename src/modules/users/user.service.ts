@@ -13,7 +13,7 @@ import { randomTokenString, generateJwtToken } from '../../core/utils/helper';
 const userSchema = UserSchema;
 
 class UserSerice {
-    public createUser = async(model: RegisterDto): Promise<TokenData> => {
+    public createUser = async(model: RegisterDto) => {
         if(isEmptyObject(model)) {
             throw new HttpException(400, 'Model is empty')
         }
@@ -36,16 +36,12 @@ class UserSerice {
         const salt = await bcryptjs.genSalt(10);
     
         const hashedPassword = await bcryptjs.hash(model.password, salt);
-        const createdUser = await userSchema.create({
+
+        await userSchema.create({
           ...model,
           password: hashedPassword,
           avatar: avatar,
         });
-    
-        const refreshToken = await this.generateRefreshToken(createdUser._id);
-        await refreshToken.save();
-    
-        return generateJwtToken(createdUser._id, refreshToken.token);
     }
     
     private generateRefreshToken = async(userId: string): Promise<any> => {

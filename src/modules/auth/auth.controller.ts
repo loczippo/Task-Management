@@ -17,18 +17,28 @@ class AuthController {
 
       //stored credentials cookie in client session
 
+      let isDomain = process.env.FE_URL || "";
+      
+      if(process.env.NODE_ENV == 'production') {
+        const cleanedUrl = isDomain.replace(/(https?:\/\/)/gi, "").split(".");
+        isDomain = cleanedUrl.slice(cleanedUrl.length-2).join(".")
+      }
+      else {
+        isDomain = 'localhost'
+      }
+
       res.cookie('user_token', tokenData.token, {
         maxAge: 1000* 60 * 60 *24 * 1,
         secure: isSecure,
         httpOnly: true,
-        domain: '.svchatbot.net'
+        domain: isDomain
       });
 
       res.cookie('refresh_token', tokenData.refreshToken, {
         maxAge: 1000* 60 * 60 *24 * 365,
         secure: isSecure,
         httpOnly: true,
-        domain: '.svchatbot.net'
+        domain: isDomain
       });
 
       res.status(200).json(tokenData);

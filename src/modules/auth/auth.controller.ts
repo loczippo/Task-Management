@@ -13,7 +13,7 @@ class AuthController {
 
       const isSecure = process.env.NODE_ENV != 'development';
 
-      const isDomain = process.env.NODE_ENV == 'production' ? process.env.FE_URL?.replace(/^https?:\/\//, '') : 'localhost';
+      // const isDomain = process.env.NODE_ENV == 'production' ? process.env.FE_URL?.replace(/^https?:\/\//, '') : 'localhost';
 
       //stored credentials cookie in client session
 
@@ -21,14 +21,14 @@ class AuthController {
         maxAge: 1000* 60 * 60 *24 * 1,
         secure: isSecure,
         httpOnly: true,
-        domain: isDomain
+        domain: '.svchatbot.net'
       });
 
       res.cookie('refresh_token', tokenData.refreshToken, {
         maxAge: 1000* 60 * 60 *24 * 365,
         secure: isSecure,
         httpOnly: true,
-        domain: isDomain
+        domain: '.svchatbot.net'
       });
 
       res.status(200).json(tokenData);

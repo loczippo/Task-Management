@@ -10,6 +10,25 @@ class AuthController {
       const ip: string = req.ip;
 
       const tokenData: TokenData = await authService.login(model, ip);
+
+      const isSecure = process.env.NODE_ENV != 'development';
+
+      const isDomain = process.env.NODE_ENV == 'production' ? process.env.FE_URL?.replace(/^https?:\/\//, '') : 'localhost';
+
+      res.cookie('user_token', tokenData.token, {
+        maxAge: 1000* 60 * 60 *24 * 1,
+        secure: isSecure,
+        httpOnly: true,
+        domain: isDomain
+      });
+
+      res.cookie('refresh_token', tokenData.refreshToken, {
+        maxAge: 1000* 60 * 60 *24 * 365,
+        secure: isSecure,
+        httpOnly: true,
+        domain: isDomain
+      });
+
       res.status(200).json(tokenData);
     } catch (error) {
       next(error);

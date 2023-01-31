@@ -11,7 +11,6 @@ import { Logger } from '../src/core/utils';
 import IMessage from '@core/interfaces/message.interface';
 import IRateLimit from '@core/interfaces/rate_limit.interface';
 import timeout from 'connect-timeout';
-import swaggerUi from 'swagger-ui-express';
 
 const app: express.Application = express();
 const port: string | number = process.env.PORT || 3000;

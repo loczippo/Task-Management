@@ -15,6 +15,8 @@ class AuthController {
 
       const isDomain = process.env.NODE_ENV == 'production' ? process.env.FE_URL?.replace(/^https?:\/\//, '') : 'localhost';
 
+      //stored credentials cookie in client session
+
       res.cookie('user_token', tokenData.token, {
         maxAge: 1000* 60 * 60 *24 * 1,
         secure: isSecure,

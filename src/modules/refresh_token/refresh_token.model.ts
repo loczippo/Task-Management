@@ -2,21 +2,24 @@ import mongoose, { Schema } from 'mongoose';
 
 import { IRefreshToken } from '../../core/interfaces/refresh_token.interface';
 
-const RefreshTokenSchema = new mongoose.Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'user',
+const RefreshTokenSchema = new mongoose.Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
+    },
+    token: String,
+    expires: Date,
+    createdByIp: String,
+    revoked: Date,
+    revokedByIp: String,
+    replacedByToken: String
   },
-  token: String,
-  expires: Date,
-  createdByIp: String,
-  revoked: Date,
-  revokedByIp: String,
-  replacedByToken: String,
-}, {
-  timestamps: true,
-  versionKey: false,
-});
+  {
+    timestamps: true,
+    versionKey: false
+  }
+);
 
 RefreshTokenSchema.virtual('isExpired').get(function (this: { expires: Date }) {
   return Date.now() >= this.expires.getTime();
@@ -34,7 +37,7 @@ RefreshTokenSchema.set('toJSON', {
     delete ret._id;
     delete ret.id;
     delete ret.user;
-  },
+  }
 });
 
 export default mongoose.model<IRefreshToken & mongoose.Document>('refreshToken', RefreshTokenSchema);

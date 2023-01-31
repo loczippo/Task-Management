@@ -45,7 +45,7 @@ class AuthService {
 
     const userRole = RoleEnum.ADMIN;
 
-    let user_info = {
+    const user_info = {
       _id: user._id,
       last_name: user.last_name,
       first_name: user.first_name,
@@ -62,7 +62,6 @@ class AuthService {
     const refreshToken = await this.getRefreshTokenFromDb(token, ip);
     const user: IPublicUserInfo = refreshToken.user as IPublicUserInfo;
 
-
     // replace old refresh token with a new one and save
     const newRefreshToken = await this.generateRefreshToken(user._id, ip);
     refreshToken.revoked = new Date(Date.now());
@@ -78,15 +77,14 @@ class AuthService {
     // revoke token and save
     refreshToken.revoked = new Date(Date.now());
     await refreshToken.save();
-    return { message: 'Success revoke token'};
+    return { message: 'Success revoke token' };
   }
 
   private async getRefreshTokenFromDb(refreshToken: string, ip?: string) {
     const token = await RefreshTokenSchema.findOne({ token: refreshToken }).populate('user').exec();
-    
-    if (!token || token.isExpired) throw new HttpException(400, `Invalid refresh token`);
-    if(!token.revoked && ip != null && token.createdByIp != ip) {
 
+    if (!token || token.isExpired) throw new HttpException(400, `Invalid refresh token`);
+    if (!token.revoked && ip != null && token.createdByIp != ip) {
       const url = `http://api.ipstack.com/${ip}?access_key=b15d53eb0f63b5a549a7b1833c2e0841`;
       const res = await p({
         url: url,
@@ -96,21 +94,23 @@ class AuthService {
 
       const body: ILocationIpAddress = res.body as ILocationIpAddress;
 
-      var userEmail = token.user.toString().split('\n')[4].split('\'')[1];
-      console.log(`Tài khoản của bạn: ${userEmail} vừa đăng nhập trên một thiết bị mới: ${body.ip} tại ${body.city}, ${body.region_name}, ${body.country_name}. Nếu không phải bạn, hãy thay đổi mật khẩu ngay lập tức`);
-
+      const userEmail = token.user.toString().split('\n')[4].split("'")[1];
+      console.log(
+        `Tài khoản của bạn: ${userEmail} vừa đăng nhập trên một thiết bị mới: ${body.ip} tại ${body.city}, ${body.region_name}, ${body.country_name}. Nếu không phải bạn, hãy thay đổi mật khẩu ngay lập tức`
+      );
     }
-    if(!token.isActive) { //RFR detect hacker attacking the session
-      //dispute refresh token session in hacker-user 
-      if(token.revoked) {
+    if (!token.isActive) {
+      //RFR detect hacker attacking the session
+      //dispute refresh token session in hacker-user
+      if (token.revoked) {
         await this.revokeToken(token.replacedByToken);
       }
-      throw new HttpException(401, `Session invalid`); 
+      throw new HttpException(401, `Session invalid`);
     }
     return token;
   }
 
-  private generateRefreshToken = async (userId: string = '', ip: string): Promise<any> => {
+  private generateRefreshToken = async (userId = '', ip: string): Promise<any> => {
     // create a refresh token that expires in 7 days
     return new RefreshTokenSchema({
       user: userId,

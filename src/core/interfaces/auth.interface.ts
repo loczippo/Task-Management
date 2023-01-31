@@ -1,10 +1,10 @@
 interface DataStoredInToken {
-    id: string;
-}
-  
-interface TokenData {
-    token: string;
-    refreshToken: string;
+  id: string;
 }
 
-export { DataStoredInToken, TokenData }
+interface TokenData {
+  token: string;
+  refreshToken: string;
+}
+
+export { DataStoredInToken, TokenData };

@@ -4,7 +4,7 @@ import authController from './auth.controller';
 import authMiddleware from './../../core/middlewares/auth.middleware';
 const AuthRoute = (): Route => {
   const u = (path: string): string => process.env.PREFIX_API + '/auth' + path;
-  let router = Router();
+  const router = Router();
 
   router.post(u(``), authController.login); //login
   router.post(u(`/refresh-token`), authController.refreshToken); //refresh token

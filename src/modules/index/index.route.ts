@@ -1,14 +1,22 @@
-import IndexController from "./index.controler";
-import { Router } from "express";
-import { Route } from "../../core/interfaces";
+import IndexController from './index.controler';
+import { Router } from 'express';
+import { Route } from '@core/interfaces';
+import { RateLimit } from '../../app';
+import IRateLimit from '@core/interfaces/rate_limit.interface';
+/**
+ * @category General Use
+ */
 
-const IndexRoute = (): Route => {
+const indexRoute = (): Route => {
+  const u = (path: string): string => process.env.PREFIX_API + path;
 
-    let path = '/';
-    let router = Router();
-    
-    router.get(path, IndexController)
-    return {path, router}
-}
+  // const props: IRateLimit = {path: path, maxRequest: 2, minutes: 1};
+  // RateLimit(props);
 
-export default IndexRoute;
+  const router = Router();
+  router.get(u(`/`), IndexController.index);
+
+  return { router };
+};
+
+export default indexRoute;
